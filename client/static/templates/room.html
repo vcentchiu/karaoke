@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head> 
+	<title> karaoke </title>
+    <link rel="stylesheet" href="../static/style.css" type="text/css"> </link>
+    <link rel="stylesheet" href="../static/room.css" type="text/css"> </link>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> </link>
+
+    <!-- socket -->
+    <script src="/socket.io/socket.io.js"> </script>
+
+    <!-- peer 
+    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+     -->
+    
+
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- velocity -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.min.js"></script>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    
+</head>
+
+<body>
+    <div id="room">
+        <div id="users-container">
+            <div style="text-align: center"> connected mics </div>
+        </div>
+        <div id="info"> 
+            Room Id: <div id="room-id"> </div>
+        </div>
+    </div> 
+</body>
+
+
+<!-- simple peer -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/6.2.1/simplepeer.min.js"> </script>
+<script src="../static/roomTest.js"> </script>
+
+
+
+
+
+
+
+
+
+
+</html>

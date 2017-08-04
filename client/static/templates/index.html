@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head> 
+	<title> karaoke </title>
+    <link rel="stylesheet" href="static/style.css" type="text/css"> </link>
+    <link rel="stylesheet" href="static/landing.css" type="text/css"> </link>
+    <link rel="stylesheet" href="static/room.css" type="text/css"> </link>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> </link>
+
+    <!-- peer 
+    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+    --> 
+
+    <!-- simple peer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/6.2.1/simplepeer.min.js"> </script>
+   
+    <!-- socket -->
+    <script src="/socket.io/socket.io.js"> </script>
+   
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- velocity -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.min.js"></script>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    
+</head>
+
+<body>
+    <div id="landing" style="display: block">
+        <div id="main-image"> 
+            <div class="filter"> </div>
+        </div>
+        <div class="button-container">
+            <div id="create" class="button btn-landing">
+                <div class="button-text" >
+                    create room
+                </div>
+            </div>
+            <div id="join" class="button btn-landing">
+                <div class="button-text" >
+                    join a room
+                </div>
+            </div>
+        </div>
+
+        <div id="create-form" class="full-modal" style="opacity: 0; display: none"> 
+            <div class="filter filter-dark"> </div>
+            <form class="form-container">
+                <div class="form-group">
+                    <label> Room Name </label>
+                    <input class="form-control" id="roomname" placeholder="room name">
+                </div>
+                <div class="form-group">
+                    <label> Room Password </label>
+                    <input type="password" class="form-control" id="roomPass" placeholder="room password">
+                </div>
+                <!-- <div id="create-submit" type="submit" style="float: right" class="submit btn btn-primary"> Create </div> -->
+                <div id="create-submit" style="float: right; margin: 0" class="button">
+                    <div class="button-text">
+                        create
+                    </div>
+                </div>
+            </form>
+         <!--    <div class="form-container">
+                <input class="form-input" type="text" placeholder="username" style="margin-top: 50px"> </input>
+                <input class="form-input" type="text" placeholder="enter room name"> </input>
+                <input class="form-input" type="text" placeholder="enter room password"> </input>
+                <input id="create-submit" class="form-submit" type="submit" value="create"> </input>
+            </div> -->
+        </div>
+
+        <div id="join-form" class="full-modal" style="opacity: 0; display: none"> 
+            <div class="filter filter-dark"> </div>
+            <form class="form-container">
+                <div class="form-group">
+                    <label> User Name </label>
+                    <input type="email" class="form-control" id="username" aria-describedby="emailHelp" placeholder="username">
+                </div>
+                <div class="form-group">
+                    <label> Room ID </label>
+                    <input class="form-control" id="roomid" placeholder="room id">
+                </div>
+                <div class="form-group">
+                    <label> Room Password </label>
+                    <input type="password" class="form-control" id="password" placeholder="room password">
+                </div>
+                <div id="join-submit" style="float: right; margin: 0" class="button">
+                    <div class="button-text">
+                        join
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="room" style="display: none">
+        <div id="users-container">
+            <div style="text-align: center"> connected mics </div>
+            <!-- <div class="user-container"> 
+                <div class="user-name"> vince </div>
+                <div class="user-status"> </div>
+            </div> -->
+        </div>
+        <div id="info"> 
+            <div id="room-id"> room id </div>
+        </div>
+       
+    </div> 
+    <div id="user" style="display: none"> 
+        <div class="absolute-center"> 
+            <div id="mic"> mic </div>
+        </div>
+    </div>
+</body>
+
+<script src="static/landing.js"> </script>
+
+
+<!-- 
+    <script src="static/userTest.js"> </script>
+    <script src="static/room.js"> </script>
+    <script src="static/mic.js"> </script>
+ -->
+
+
+
+
+
+</html>
