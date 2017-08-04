@@ -1,5 +1,4 @@
 var users = {};
-var socket;
 
 var mics = {};
 
@@ -11,15 +10,20 @@ $(function() {
 	var url = window.location.pathname;
 	var urlsplit = url.split("/").slice(-1)[0];
 
-	socket = io("/" + urlsplit);
+	var socket = io("/" + urlsplit);
 	window.socket = socket;
 
 	console.log(socket);
 	
 	socket.emit('room');
 	socket.on('room_ready', function() {
-		console.log('yaya');
+		console.log('room ready');
+		socket.on('mic_ready', function(user) {
+			console.log(user.name + " joined");
+			addUser(user);
+		})
 	})
+
 
 	// socket.on('joined_room', function() {
 	// 	socket.on('userser_join', function(user) {
@@ -27,12 +31,13 @@ $(function() {
 	// 		addUser(user);
 	// 	});
 
-	// 	socket.on('add_mic', function(data) {
-	// 		console.log('received mic id');
-	// 		var mic = new MicConnection();
-	// 		mic.init(data.micId);
-	// 		mics[data.name] = mic;
-	// 	});
+	socket.on('add_mic', function(data) { // get mic ID, create port 
+		console.log('received mic id');
+		var mic = new MicConnection();
+		mic.init(data.micId, data.micName);
+		console.log("mic name: " + data.micName);
+		mics[data.name] = mic;
+	});
 
 	// 	// // user status lights
 
@@ -123,8 +128,9 @@ $(function() {
 function MicConnection() {}
 
 
-MicConnection.prototype.init = function(micId) {
+MicConnection.prototype.init = function(micId, micName) {
 	this.micId = micId;
+	this.micName = micName;
 	this.portId;
 	this.audio;
 	this.peer = new SimplePeer({ 
@@ -138,16 +144,17 @@ MicConnection.prototype.init = function(micId) {
 
 	this.peer.signal(micId);
 
-	this.peer.on('signal', function(data) {
+	this.peer.on('signal', function(data) { // send port id to mic to verify connection
 		var key = {};
 		this.portId = JSON.stringify(data);
 		key.room = this.portId;
-		key.mic = this.micName;
-		socket.emit('send_roomId', key);
+		console.log(micName);
+		key.micName = micName;
+		socket.emit('send_roomId', key); // send port id
 	});
 
 	this.peer.on('stream', function(stream) {
-		console.log("streaming");
+		console.log("streaming to port: " + this.portId);
 		var audio = document.createElement('audio');
 		this.audio = audio;
 		document.body.appendChild(audio);

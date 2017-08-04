@@ -26,26 +26,26 @@ $(function() {
 	socket = io(parser.pathname);
 	window.socket = socket;
 
-	socket.emit('mic');
-	socket.on('mic_ready', function() {
-		console.log("yay");
-	});
-
+	// startMic();
 
 	$("#join-submit").click(function() {
-		console.log("joining room");
-		$("#create-form").css("display", "none");
-		$("#landing").css("display", "none");
-		$("#user").css("display", "block");
-		// roomId = $("#roomid").val(); 
+		// roomId = $("#roomid").val();
 		username = $("#username").val();
+		$("#user-info").css("display", "none");
+		// socket.emit('user_login', username);
+		// startMic();
 
-		socket.emit('user_login', username);
-		startMic();
+		socket.emit('mic', username);
 
 		// startConnection();
 	});
 
+	socket.on('mic_ready', function(user) {
+		if (user.id === socket.id) {
+			console.log("mic entered");
+			startMic();
+		}
+	});
 	
 
 	function startMic() {
@@ -83,13 +83,18 @@ $(function() {
 			// micId = micId;
 			var data = {};
 			data.micId = JSON.stringify(micId);
-			data.name = username;
-			socket.emit('new_mic', data);
+			data.micName = username;
+			// data.socketId = window.socket.id;
+			socket.emit('new_mic', data); // send mic id over 
+			// sendData('new_mic', data);
+			console.log(data.micName);
 			console.log(data.micId);
 		})
 
 		socket.on('verify_room', function(key) {
-			if (key.mic === micId) {
+			console.log("mic name" + key.micName);
+			console.log("username: " + username);
+			if (key.micName === username) {
 				console.log("connected mic!");
 				var roomKey = JSON.parse(key.room);
 				peer.signal(roomKey);
@@ -138,6 +143,12 @@ $(function() {
 		}
 	}
 
+	function sendData(msg, data) {
+		var info = {};
+		info.data = data;
+		info.id = socket.id;
+		socket.emit(msg, info);
+	}
 	
 	
 
@@ -146,14 +157,6 @@ $(function() {
 		conn.on('error', function(err) {
 			console.log(err);
 		});
-	}
-	
-
-	function dataWrap(id, data) {
-		var info = {};
-		info.id = id;
-		info.data = data;
-		return info;
 	}
 });
 

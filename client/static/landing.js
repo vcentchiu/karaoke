@@ -13,6 +13,16 @@ $(function() {
 		socket.emit("create_room", roomname);
 	});
 
+	$("#join-submit").click(function() {
+		console.log("joining room");
+		// $("#create-form").css("display", "none");
+		// $("#landing").css("display", "none");
+		// $("#user").css("display", "block");
+		// // roomId = $("#roomid").val(); 
+		// username = $("#username").val();
+		window.location = "/" + $("#roomid").val();
+	});
+
 	socket.on('room_error', function() {
 		// shake modal: error message 
 	});

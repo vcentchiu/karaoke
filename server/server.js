@@ -59,55 +59,59 @@ io.on('connection', function(socket) {
 
 function Room() {}
 Room.prototype.init = function(roomname) {
+	var sockets = {};
 	this.roomname = roomname;
 	console.log("attr roomname: " +  this.roomname);
 	console.log("roomname: " + roomname);
-	this.io = io.of('/' + this.roomname);
+	var roomio = io.of('/' + this.roomname);
 
-	this.io.on('connection', function(socket) {
+	roomio.on('connection', function(socket) {
 		console.log("connection to room: " + roomname);
 
 		socket.on('room', function() {
-			io.emit('room_ready');
+			roomio.emit('room_ready');
 
 		});
 
-		socket.on('mic', function() {
-			io.emit('mic_ready');
+		socket.on('mic', function(username) {
+			var user = createUser(username, socket.id);
+			sockets[socket.id] = socket;
+			roomio.emit('mic_ready', user);
 		});
 
-		socket.on('user_login', function(name) {
-			console.log("player join");
-			user = createUser(name, socket.id);
-			sockets[socket.id] = user;
-			io.emit('user_join', user);
-		});
+		// socket.on('user_login', function(name) {
+		// 	console.log("player join");
+		// 	user = createUser(name, socket.id);
+		// 	sockets[socket.id] = user;
+		// 	io.emit('user_join', user);
+		// });
 
 		socket.on('new_mic', function(micId) {
-			io.emit('add_mic', micId);
+			roomio.emit('add_mic', micId);
 		});
 
 		socket.on('send_roomId', function(data) {
-			io.emit('verify_room', data);
+			// send to specific mic
+			roomio.emit('verify_room', data);
 		})
 
-		socket.on('streaming', function(stream) {
-			console.log("inc voice: " + stream);
-			io.emit('sound', stream);
-		});
-		socket.on('mic-on', function() {
-			io.emit('user-status-on', user);
-		});
-		socket.on('mic-off', function() {
-			io.emit('user-status-off', user);
-		});
+		// socket.on('streaming', function(stream) {
+		// 	console.log("inc voice: " + stream);
+		// 	io.emit('sound', stream);
+		// });
+		// socket.on('mic-on', function() {
+		// 	io.emit('user-status-on', user);
+		// });
+		// socket.on('mic-off', function() {
+		// 	io.emit('user-status-off', user);
+		// });
 
-		socket.on('disconnect', function() {
-			console.log("player disconnect");
-			io.emit('user_leave', user);
-			delete sockets[socket.id];
+		// socket.on('disconnect', function() {
+		// 	console.log("player disconnect");
+		// 	io.emit('user_leave', user);
+		// 	delete sockets[socket.id];
 			
-		});
+		// });
 	});
 }
 
