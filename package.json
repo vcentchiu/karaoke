@@ -2,6 +2,9 @@
   "name": "karaoke",
   "version": "0.0.1",
   "description": "karaoke app",
+  "scripts": {
+    "start": "server/server.js"
+  },
   "dependencies": {
     "browserify": "^14.4.0",
     "ejs": "^2.5.7",
