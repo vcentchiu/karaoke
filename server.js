@@ -10,23 +10,23 @@ var sslOptions = {
 var server = https.Server(sslOptions, app).listen(8080);
 var io = require('socket.io')(server);
 
-app.use(express.static(__dirname + '/../client'));
+app.use(express.static(__dirname + '/client'));
 
 app.use('/simple-peer', express.static(__dirname + '/node_modules/simple-peer/'));
 
 app.get('/', function(req, res) {
-	res.sendFile(path.join(__dirname, '/../client/static/templates/index.html'));
+	res.sendFile(path.join(__dirname, '/client/static/templates/index.html'));
 });
 
 app.get('/room/:id', function(req, res) {
 	// if room number is valid // room already open
-	res.sendFile(path.join(__dirname, '/../client/static/templates/room.html'));
+	res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
 });
 
 app.get('/:id', function(req, res) {
 	// check if id in rooms list
 	console.log("joining room: " + req.params.id);
-	res.sendFile(path.join(__dirname, '/../client/static/templates/mic.html'));
+	res.sendFile(path.join(__dirname, '/client/static/templates/mic.html'));
 });
 
 
