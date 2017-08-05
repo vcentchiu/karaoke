@@ -2,17 +2,6 @@
   "name": "karaoke",
   "version": "0.0.1",
   "description": "karaoke app",
-  "devDependencies": {
-    "browserify": "^14.4.0",
-    "budo": "^4.1.0",
-    "nodemon": "^1.11.0",
-    "watchify": "^3.9.0"
-  },
-  "scripts": {
-    "watch": "watchify client/main.js -o public/app.js -v",
-    "build": "browserify client/main.js -o public/app.js",
-    "start": "npm run watch & nodemon server.js"
-  },
   "dependencies": {
     "browserify": "^14.4.0",
     "ejs": "^2.5.7",
