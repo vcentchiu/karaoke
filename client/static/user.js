@@ -1,47 +1,72 @@
+
+
+// get user list from server
+	// socket.on('request_access')
+// check if username is valid
+// connect 
+	// socket.emi('add_user')
+		//io.emit('add_user') -> main channel updates list
+
+// 
+
+
 $(function() {
 	var roomId;
 	var username;
 	var micId;
-	var socket = io();
-	window.socket = socket;
+	var socket;
+
+
 	var sound;
 	var micOn = false;
 	var peer;
+	var parser = document.createElement('a');
+	parser.href = window.location.href;
+	console.log(parser.pathname);
+	socket = io(parser.pathname);
+	window.socket = socket;
 
-
+	// startMic();
 
 	$("#join-submit").click(function() {
-		console.log("joining room");
-		$("#create-form").css("display", "none");
-		$("#landing").css("display", "none");
-		$("#user").css("display", "block");
-		roomId = $("#roomid").val(); 
+		// roomId = $("#roomid").val();
 		username = $("#username").val();
+		$("#user-info").css("display", "none");
+		// socket.emit('user_login', username);
+		// startMic();
 
-		socket.emit('user_login', username);
-		startMic();
+		socket.emit('mic', username);
 
 		// startConnection();
 	});
 
+	socket.on('mic_ready', function(user) {
+		if (user.id === socket.id) {
+			console.log("mic entered");
+			startMic();
+		}
+	});
 	
 
 	function startMic() {
-		navigator.mediaDevices.getUserMedia({audio: true, video: true})
+		navigator.mediaDevices.getUserMedia({audio: true, video: false})
 			.then(function(mediaStream) {
 				// window.stream = mediaStream;
 				// var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 				// sound = audioCtx.createMediaStreamSource(window.stream);
 
 				peer = new SimplePeer({ 
-					initiator: false,
+					initiator: true,
 					trickle: false,
-					stream: mediaStream,
 					offerConstraints: { 
-			      		offerToReceiveAudio: false, 
-			      		offerToReceiveVideo: false
-			    	}
+						offerToReceiveAudio: false, 
+			     		offerToReceiveVideo: false
+					},
+					stream: mediaStream
 				})
+				
+
+				
 				_startConnection();
 			})
 			.catch(function(err) {
@@ -51,22 +76,38 @@ $(function() {
 	}
 
 	function _startConnection() {
-		var roomKey = JSON.parse(roomId);
-		peer.signal(roomId);
-		peer.on('signal', function(data) {
-			console.log(data);
-			micId = JSON.stringify(data);
-			socket.emit('mic_join', micId);
-		});
+		console.log("please wait. connecting mic...");
+
+		peer.on('signal', function(micId) {
+			// $("#room-id").html(JSON.stringify(data));
+			// micId = micId;
+			var data = {};
+			data.micId = JSON.stringify(micId);
+			data.micName = username;
+			// data.socketId = window.socket.id;
+			socket.emit('new_mic', data); // send mic id over 
+			// sendData('new_mic', data);
+			console.log(data.micName);
+			console.log(data.micId);
+		})
+
+		socket.on('verify_room', function(key) {
+			console.log("mic name" + key.micName);
+			console.log("username: " + username);
+			if (key.micName === username) {
+				console.log("connected mic!");
+				var roomKey = JSON.parse(key.room);
+				peer.signal(roomKey);
+			}
+		})
 
 		peer.on('connect', function() {
 			// connection ready
 			console.log('ready');
 
 			// allow MIC Controls
-			micToggle();
-
-		});
+			// micToggle();
+		})
 	}
 
 
@@ -102,6 +143,12 @@ $(function() {
 		}
 	}
 
+	function sendData(msg, data) {
+		var info = {};
+		info.data = data;
+		info.id = socket.id;
+		socket.emit(msg, info);
+	}
 	
 	
 
@@ -110,14 +157,6 @@ $(function() {
 		conn.on('error', function(err) {
 			console.log(err);
 		});
-	}
-	
-
-	function dataWrap(id, data) {
-		var info = {};
-		info.id = id;
-		info.data = data;
-		return info;
 	}
 });
 
