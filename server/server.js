@@ -7,8 +7,22 @@ var sslOptions = {
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 };
+
+// var mongo = require('mongodb').MongoClient;
+// var assert = require('assert');
+// var url = 'mongodb://vincechiu:vchiu1013@ds013232.mlab.com:13232/karaoke';
+// var db;
 var server = https.Server(sslOptions, app).listen(8080);
 var io = require('socket.io')(server);
+
+// mongo.connect(url, function(err, database) {
+// 	assert.equal(null, err);
+// 	db = database;
+// 	server.listen(8080);
+// });
+
+
+
 
 app.use(express.static(__dirname + '/../client'));
 
@@ -20,15 +34,38 @@ app.get('/', function(req, res) {
 
 app.get('/room/:id', function(req, res) {
 	// if room number is valid // room already open
+	// mongo.createCollection(req.params.id);
 	res.sendFile(path.join(__dirname, '/../client/static/templates/room.html'));
 });
 
-app.get('/:id', function(req, res) {
-	// check if id in rooms list
-	console.log("joining room: " + req.params.id);
-	res.sendFile(path.join(__dirname, '/../client/static/templates/mic.html'));
-});
+// app.get('/:id', function(req, res) {
+// 	// check if id in rooms list
+// 	console.log("joining room: " + req.params.id);
+// 	res.sendFile(path.join(__dirname, '/../client/static/templates/mic.html'));
+// });
 
+
+
+
+var rooms = {};
+
+app.get('/create-room/:id-:name', function(req, res) {
+	var roomId = req.params.id;
+	var roomName = req.params.name;
+	// console.log(id);
+	// res.send(req.params);
+	// var rooms = db.collection('rooms');
+	// var Room = {
+	// 	name: roomName,
+	// 	queue: null,
+	// 	mics: null, 
+	// }
+	// db.rooms.insertOne(Room, function(err, result) {
+	// 	assert.equal(null, err);
+	// 	console.log("room created");
+	// 	res.send("room-created");
+	// });
+});
 
 
 var sockets = {};

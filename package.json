@@ -7,6 +7,9 @@
     "browserify": "^14.4.0",
     "ejs": "^2.5.7",
     "express": "^4.15.3",
+    "mongodb": "^2.2.31",
+    "mongoose": "^4.11.6",
+    "mustache": "^2.3.0",
     "simple-peer": "^8.1.1",
     "socket.io": "^2.0.3"
   }

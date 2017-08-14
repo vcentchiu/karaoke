@@ -9,17 +9,20 @@ $(function() {
 
 	$("#create-submit").click(function() {
 		var roomname = $("#roomname").val();
-		console.log("load room: " + roomname);
-		socket.emit("create_room", roomname);
+		// console.log("room name: " + roomname);
+		// socket.emit("create_room", roomname);
+		$.get('/create-room/' + socket.id + '-' + roomname, function(data) {
+			if (data) {
+				console.log(data);
+				console.log("room approved");
+				// window.location = "/room/" + roomname;
+			}
+		});
+
 	});
 
 	$("#join-submit").click(function() {
 		console.log("joining room");
-		// $("#create-form").css("display", "none");
-		// $("#landing").css("display", "none");
-		// $("#user").css("display", "block");
-		// // roomId = $("#roomid").val(); 
-		// username = $("#username").val();
 		window.location = "/" + $("#roomid").val();
 	});
 
@@ -27,14 +30,10 @@ $(function() {
 		// shake modal: error message 
 	});
 
-	socket.on('room_approve', function(namespace) {
-		// $("#create-form").css("display", "none");
-		// $("#landing").css("display", "none");
-		// $("#room").css("display", "block");
-		console.log(namespace);
-		window.location = "/room/" + namespace;
-		return false;
-	});
+	// socket.on('room_approve', function(namespace) {
+	// 	window.location = "/room/" + namespace;
+	// 	return false;
+	// });
 
 });
 

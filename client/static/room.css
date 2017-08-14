@@ -110,6 +110,7 @@ body {
 	width: 200px;
 	position: absolute;
 	left: 400px;
+	display: inline-block;
 	/*width: 100%;*/
 	/*display: inline !important;*/
 }
@@ -153,8 +154,14 @@ body {
 	margin-right: 15px;
 }
 
-.nav-item-text {
-
+#minimize-left {
+	position: absolute;
+	display: inline-block;
+	right: 0;
+	height: 100%;
+	padding: 15px;
+	line-height: calc(50px - 30px);
+	vertical-align: middle;
 }
 
 .nav-light {
@@ -172,7 +179,7 @@ body {
 
 .left-container {
 	width: 100%;
-	height: 100%;
+	height: calc(100% - 50px);
 	position: relative;
 	/*position: absolute;*/
 	padding: 25px;
