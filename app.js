@@ -1,130 +1,50 @@
-var express = require('express');
-var path = require('path');
-var fs = require('fs');
-var https = require('https');
-var app = express();
-var sslOptions = {
-  key: fs.readFileSync('server/key.pem'),
-  cert: fs.readFileSync('server/cert.pem')
-};
-var server = https.Server(sslOptions, app).listen(8080);
-var io = require('socket.io')(server);
+var express = require('express'),  
+    app = express.createServer(express.logger()),
+    io = require('socket.io').listen(app),
+    routes = require('./routes');
 
-app.use(express.static(__dirname + '/client'));
+// Configuration
 
-app.use('/simple-peer', express.static(__dirname + '/node_modules/simple-peer/'));
-
-app.get('/', function(req, res) {
-	res.sendFile(path.join(__dirname, '/client/static/templates/index.html'));
+app.configure(function() {  
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'ejs');
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 
-app.get('/room/:id', function(req, res) {
-	// if room number is valid // room already open
-	res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
+app.configure('development', function() {  
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.get('/:id', function(req, res) {
-	// check if id in rooms list
-	console.log("joining room: " + req.params.id);
-	res.sendFile(path.join(__dirname, '/client/static/templates/mic.html'));
+app.configure('production', function() {  
+  app.use(express.errorHandler());
 });
 
-
-
-var sockets = {};
-var users = [];
-
-
-var rooms = [];
-
-io.on('connection', function(socket) { 
-	// io send roomname list
-	// console.log("new user");
-	var user;
-
-	io.emit('rooms_list', rooms);
-	socket.on('create_room', function(roomname) {
-		// if (roomname in rooms) {
-		// 	socket.broadcast.to(socket.id).emit('room_error');
-		// } else {
-			var newRoom = new Room();
-			// console.log(roomname);
-			newRoom.init(roomname);
-			// socket.broadcast.to(socket.id).emit('room_approve');
-			io.emit('room_approve', roomname);
-		// }
-	});
-
+// Heroku won't actually allow us to use WebSockets
+// so we have to setup polling instead.
+// https://devcenter.heroku.com/articles/using-socket-io-with-node-js-on-heroku
+io.configure(function () {  
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
 });
 
-function Room() {}
-Room.prototype.init = function(roomname) {
-	var sockets = {};
-	this.roomname = roomname;
-	console.log("attr roomname: " +  this.roomname);
-	console.log("roomname: " + roomname);
-	var roomio = io.of('/' + this.roomname);
+// Routes
 
-	roomio.on('connection', function(socket) {
-		console.log("connection to room: " + roomname);
+var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000  
+app.listen(port, function() {  
+  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+});
 
-		socket.on('room', function() {
-			roomio.emit('room_ready');
+app.get('/', routes.index);
 
-		});
+var status = "All is well.";
 
-		socket.on('mic', function(username) {
-			var user = createUser(username, socket.id);
-			sockets[socket.id] = socket;
-			roomio.emit('mic_ready', user);
-		});
-
-		// socket.on('user_login', function(name) {
-		// 	console.log("player join");
-		// 	user = createUser(name, socket.id);
-		// 	sockets[socket.id] = user;
-		// 	io.emit('user_join', user);
-		// });
-
-		socket.on('new_mic', function(micId) {
-			roomio.emit('add_mic', micId);
-		});
-
-		socket.on('send_roomId', function(data) {
-			// send to specific mic
-			roomio.emit('verify_room', data);
-		})
-
-		// socket.on('streaming', function(stream) {
-		// 	console.log("inc voice: " + stream);
-		// 	io.emit('sound', stream);
-		// });
-		// socket.on('mic-on', function() {
-		// 	io.emit('user-status-on', user);
-		// });
-		// socket.on('mic-off', function() {
-		// 	io.emit('user-status-off', user);
-		// });
-
-		// socket.on('disconnect', function() {
-		// 	console.log("player disconnect");
-		// 	io.emit('user_leave', user);
-		// 	delete sockets[socket.id];
-			
-		// });
-	});
-}
-
-// https.listen(3000, function(){
-//   console.log('listening on *:3000');
-// });
-
-
-function createUser(name, socketId) {
-	var user = {};
-	user.name = name;
-	user.id = socketId;
-
-	return user;
-}
-
+io.sockets.on('connection', function (socket) {  
+  io.sockets.emit('status', { status: status }); // note the use of io.sockets to emit but socket.on to listen
+  socket.on('reset', function (data) {
+    status = "War is imminent!";
+    io.sockets.emit('status', { status: status });
+  });
+});
