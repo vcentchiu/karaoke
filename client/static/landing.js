@@ -11,11 +11,18 @@ $(function() {
 		var roomname = $("#roomname").val();
 		// console.log("room name: " + roomname);
 		// socket.emit("create_room", roomname);
-		$.get('/create-room/' + socket.id + '-' + roomname, function(data) {
-			if (data) {
-				console.log(data);
-				console.log("room approved");
-				// window.location = "/room/" + roomname;
+		// $.get('/create-room/' + socket.id + '-' + roomname, function(data) {
+		// 	if (data) {
+		// 		console.log(data);
+		// 		console.log("room approved");
+		// 		window.location = "/room/" + data;
+		// 	}
+		// });
+		$.ajax({
+			url: "/create-room/" + socket.id + '-' + roomname,
+			success: function(result) {
+				console.log("success");
+				window.location = "/room/" + result;
 			}
 		});
 

@@ -24,9 +24,11 @@ var port = process.env.PORT || 8080;
 // 	// console.log('app listening at http://' + ${host} + ':' + ${port});
 // });
 
-app.listen(port, function() {
+const server = app.listen(port, function() {
     console.log('Our app is running on http://localhost:' + port);
 });
+
+const io = require('socket.io')(server);
 
 // var io = require('socket.io')(server);
 // mongo.connect(url, function(err, database) {
@@ -64,7 +66,7 @@ app.get('/create-room/:id-:name', function(req, res) {
 	var roomId = req.params.id;
 	var roomName = req.params.name;
 	// console.log(id);
-	// res.send(req.params);
+	res.send(roomName);
 	// var rooms = db.collection('rooms');
 	// var Room = {
 	// 	name: roomName,
@@ -76,6 +78,7 @@ app.get('/create-room/:id-:name', function(req, res) {
 	// 	console.log("room created");
 	// 	res.send("room-created");
 	// });
+	// res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
 });
 
 
@@ -86,82 +89,82 @@ var users = [];
 var rooms = [];
 
 
-// io.on('connection', function(socket) { 
-// 	// io send roomname list
-// 	// console.log("new user");
-// 	var user;
+io.on('connection', function(socket) { 
+	// io send roomname list
+	// console.log("new user");
+	var user;
 
-// 	io.emit('rooms_list', rooms);
-// 	socket.on('create_room', function(roomname) {
-// 		// if (roomname in rooms) {
-// 		// 	socket.broadcast.to(socket.id).emit('room_error');
-// 		// } else {
-// 			var newRoom = new Room();
-// 			// console.log(roomname);
-// 			newRoom.init(roomname);
-// 			// socket.broadcast.to(socket.id).emit('room_approve');
-// 			io.emit('room_approve', roomname);
-// 		// }
-// 	});
-// });
+	io.emit('rooms_list', rooms);
+	socket.on('create_room', function(roomname) {
+		// if (roomname in rooms) {
+		// 	socket.broadcast.to(socket.id).emit('room_error');
+		// } else {
+			var newRoom = new Room();
+			// console.log(roomname);
+			newRoom.init(roomname);
+			// socket.broadcast.to(socket.id).emit('room_approve');
+			io.emit('room_approve', roomname);
+		// }
+	});
+});
 
-// function Room() {}
-// Room.prototype.init = function(roomname) {
-// 	var sockets = {};
-// 	this.roomname = roomname;
-// 	console.log("attr roomname: " +  this.roomname);
-// 	console.log("roomname: " + roomname);
-// 	var roomio = io.of('/' + this.roomname);
+function Room() {}
+Room.prototype.init = function(roomname) {
+	var sockets = {};
+	this.roomname = roomname;
+	console.log("attr roomname: " +  this.roomname);
+	console.log("roomname: " + roomname);
+	var roomio = io.of('/' + this.roomname);
 
-// 	roomio.on('connection', function(socket) {
-// 		console.log("connection to room: " + roomname);
+	roomio.on('connection', function(socket) {
+		console.log("connection to room: " + roomname);
 
-// 		socket.on('room', function() {
-// 			roomio.emit('room_ready');
+		socket.on('room', function() {
+			roomio.emit('room_ready');
 
-// 		});
+		});
 
-// 		socket.on('mic', function(username) {
-// 			var user = createUser(username, socket.id);
-// 			sockets[socket.id] = socket;
-// 			roomio.emit('mic_ready', user);
-// 		});
+		socket.on('mic', function(username) {
+			var user = createUser(username, socket.id);
+			sockets[socket.id] = socket;
+			roomio.emit('mic_ready', user);
+		});
 
-// 		// socket.on('user_login', function(name) {
-// 		// 	console.log("player join");
-// 		// 	user = createUser(name, socket.id);
-// 		// 	sockets[socket.id] = user;
-// 		// 	io.emit('user_join', user);
-// 		// });
+		// socket.on('user_login', function(name) {
+		// 	console.log("player join");
+		// 	user = createUser(name, socket.id);
+		// 	sockets[socket.id] = user;
+		// 	io.emit('user_join', user);
+		// });
 
-// 		socket.on('new_mic', function(micId) {
-// 			roomio.emit('add_mic', micId);
-// 		});
+		socket.on('new_mic', function(micId) {
+			roomio.emit('add_mic', micId);
+		});
 
-// 		socket.on('send_roomId', function(data) {
-// 			// send to specific mic
-// 			roomio.emit('verify_room', data);
-// 		})
+		socket.on('send_roomId', function(data) {
+			// send to specific mic
+			roomio.emit('verify_room', data);
+		})
 
-// 		// socket.on('streaming', function(stream) {
-// 		// 	console.log("inc voice: " + stream);
-// 		// 	io.emit('sound', stream);
-// 		// });
-// 		// socket.on('mic-on', function() {
-// 		// 	io.emit('user-status-on', user);
-// 		// });
-// 		// socket.on('mic-off', function() {
-// 		// 	io.emit('user-status-off', user);
-// 		// });
+		// socket.on('streaming', function(stream) {
+		// 	console.log("inc voice: " + stream);
+		// 	io.emit('sound', stream);
+		// });
+		// socket.on('mic-on', function() {
+		// 	io.emit('user-status-on', user);
+		// });
+		// socket.on('mic-off', function() {
+		// 	io.emit('user-status-off', user);
+		// });
 
-// 		// socket.on('disconnect', function() {
-// 		// 	console.log("player disconnect");
-// 		// 	io.emit('user_leave', user);
-// 		// 	delete sockets[socket.id];
+		// socket.on('disconnect', function() {
+		// 	console.log("player disconnect");
+		// 	io.emit('user_leave', user);
+		// 	delete sockets[socket.id];
 			
-// 		// });
-// 	});
-// }
+		// });
+	});
+}
 
 
 
