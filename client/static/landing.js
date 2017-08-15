@@ -30,7 +30,7 @@ $(function() {
 
 	$("#join-submit").click(function() {
 		console.log("joining room");
-		window.location = "/" + $("#roomid").val();
+		window.location = "/mic/" + $("#roomid").val();
 	});
 
 	socket.on('room_error', function() {

@@ -16,7 +16,6 @@ $(function() {
 	var micId;
 	var socket;
 
-
 	var sound;
 	var micOn = false;
 	var peer;

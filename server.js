@@ -51,22 +51,20 @@ app.get('/room/:id', function(req, res) {
 	res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
 });
 
-// app.get('/:id', function(req, res) {
-// 	// check if id in rooms list
-// 	console.log("joining room: " + req.params.id);
-// 	res.sendFile(path.join(__dirname, '/../client/static/templates/mic.html'));
-// });
-
-
+app.get('/mic/:id', function(req, res) {
+	// check if id in rooms list
+	console.log("joining room: " + req.params.id);
+	res.sendFile(path.join(__dirname, '/../client/static/templates/mic.html'));
+});
 
 
 var rooms = {};
 
-app.get('/create-room/:id-:name', function(req, res) {
+app.get('/create-room/:id-:password', function(req, res) {
 	var roomId = req.params.id;
-	var roomName = req.params.name;
+	// var roomName = req.params.name;
 	// console.log(id);
-	res.send(roomName);
+	
 	// var rooms = db.collection('rooms');
 	// var Room = {
 	// 	name: roomName,
@@ -79,8 +77,17 @@ app.get('/create-room/:id-:name', function(req, res) {
 	// 	res.send("room-created");
 	// });
 	// res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
+
+	res.send(roomName);
 });
 
+app.get('/room/:id', function(req, res) {
+	if (req.params.id) {
+		res.sendFile(path.join(__dirname, '/client/static/templates/mic.html'));
+	}
+	// check password
+	// send room id for socket room join
+});
 
 var sockets = {};
 var users = [];
@@ -107,6 +114,14 @@ io.on('connection', function(socket) {
 		// }
 	});
 });
+
+
+function Room() {}
+Room.prototype.init = function(roomname, password) {
+	this.name = roomname;
+	this.password = password;
+}
+
 
 function Room() {}
 Room.prototype.init = function(roomname) {
