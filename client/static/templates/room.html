@@ -1,17 +1,17 @@
 <!doctype html>
 <html>
 <head> 
-	<title> karaoke </title>
+	<title> starokie - room </title>
     <link rel="stylesheet" href="../static/style.css" type="text/css"> </link>
     <link rel="stylesheet" href="../static/room.css" type="text/css"> </link>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> </link>
 
     <!-- socket -->
     <script src="/socket.io/socket.io.js"> </script>
-    <script src="/mustache/mustache.js"> </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"> </script>
     <!-- peer 
     <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+    <script src="/mustache/mustache.js"> </script>
      -->
     
 
@@ -32,20 +32,20 @@
     <div id="header" class="border-bottom list-container-flat"> 
         <div id="logo" class="list-item-flat"> </div>
         <!-- <div id="search-bar" class="list-item-flat">  -->
-            <div id="search-form">
+            <form id="search-form">
                 <input id="query" type="text" name="query" placeholder="search..."> </input>
-            </div>
+            </form>
         <!-- </div> -->
     </div>
     <div id="room">
         <div id="left-nav"> 
             <div id="top-nav" class="border-bottom"> 
                 <div class="top-nav-item"> 
-                    Queue
+                    Search
                     <div class="nav-light"> </div>
                 </div>
                 <div class="top-nav-item"> 
-                    Playlists 
+                    Queue
                     <div class="nav-light"> </div>
                 </div>
                 <div class="top-nav-item"> 
@@ -55,17 +55,28 @@
                 <div id="minimize-left"> <- </div>
             </div>
             <div class="spacer"> </div>
-            <template id="queue">
-                <div class="left-container" style="display: none">
-
-                </div> 
-            </template>
             
             <div id="playlists" class="left-container" style="display: none">
             </div>
             <div id="users-container" class="left-container">
                 <div style="text-align: center"> connected mics </div>
             </div>
+            <!-- mustache template -->
+            <script type="mustache/x-tmpl" id="search-template">
+            // {id: , img: , title: }
+                <div id="search-container">
+                    {{ #results }}
+                        <div class="result-row" id="{{ id }}">
+                            <div class="thumbnail"> 
+                                <img class="result-img" src="{{ img }}"> </img>
+                            </div>
+                            <div class="result-details">
+                                <div class="result-title"> {{ title }} </div>
+                            </div>  
+                        </div>
+                    {{ /results }}
+                </div>
+            </script>
         </div>
         <div id="main" class="border-left shadow"> 
 
@@ -77,6 +88,7 @@
 <!-- simple peer -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/6.2.1/simplepeer.min.js"> </script>
 <script src="../static/room.js"> </script>
+<script src="../static/search.js"> </script>
 
 
 

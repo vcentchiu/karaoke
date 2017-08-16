@@ -9,20 +9,12 @@ $(function() {
 
 	$("#create-submit").click(function() {
 		var roomname = $("#roomname").val();
-		// console.log("room name: " + roomname);
 		// socket.emit("create_room", roomname);
-		// $.get('/create-room/' + socket.id + '-' + roomname, function(data) {
-		// 	if (data) {
-		// 		console.log(data);
-		// 		console.log("room approved");
-		// 		window.location = "/room/" + data;
-		// 	}
-		// });
 		$.ajax({
 			url: "/create-room/" + socket.id + '-' + roomname,
 			success: function(result) {
 				console.log("success");
-				window.location = "/room/" + result;
+				// window.location = "/room/" + result;
 			}
 		});
 
@@ -30,7 +22,7 @@ $(function() {
 
 	$("#join-submit").click(function() {
 		console.log("joining room");
-		window.location = "/mic/" + $("#roomid").val();
+		window.location = "/" + $("#roomid").val();
 	});
 
 	socket.on('room_error', function() {
@@ -60,7 +52,7 @@ function openModal(id) {
 				duration: 250,
 				easing: "easeInOut",
 				complete: function() {
-					$modal.css("display", "none");
+					$modal.css("display", "none");	
 				}
 			}
 		)

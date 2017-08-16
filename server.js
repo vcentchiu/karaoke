@@ -7,7 +7,12 @@ var sslOptions = {
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 };
+var m = require('mustache');
 
+var YouTube = require('youtube-node');
+var youtube = new YouTube();
+youtube.setKey('AIzaSyCTEZJqKL0JcDcn1jDhTYvxQhQGDdxvrII');
+// var youtube = require('./api/youtube');
 
 // var mongo = require('mongodb').MongoClient;
 // var assert = require('assert');
@@ -51,18 +56,18 @@ app.get('/room/:id', function(req, res) {
 	res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
 });
 
-app.get('/mic/:id', function(req, res) {
+app.get('/:id', function(req, res) {
 	// check if id in rooms list
-	console.log("joining room: " + req.params.id);
-	res.sendFile(path.join(__dirname, '/../client/static/templates/mic.html'));
+	// console.log("joining room: " + req.params.id);
+	res.sendFile(path.join(__dirname, '/client/static/templates/mic.html'));
 });
 
 
 var rooms = {};
 
-app.get('/create-room/:id-:password', function(req, res) {
+app.get('/create-room/:id-:name', function(req, res) {
 	var roomId = req.params.id;
-	// var roomName = req.params.name;
+	var roomName = req.params.name;
 	// console.log(id);
 	
 	// var rooms = db.collection('rooms');
@@ -77,16 +82,44 @@ app.get('/create-room/:id-:password', function(req, res) {
 	// 	res.send("room-created");
 	// });
 	// res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
-
-	res.send(roomName);
+	var newRoom = new Room();
+	newRoom.init(roomName);
+	res.redirect('/room/' + roomName);
 });
 
-app.get('/room/:id', function(req, res) {
-	if (req.params.id) {
-		res.sendFile(path.join(__dirname, '/client/static/templates/mic.html'));
-	}
-	// check password
-	// send room id for socket room join
+
+app.get('/search/:query', function(req, res) {
+	// console.log("here");
+	// console.log(req.query.q);
+	// res.send(req.query);
+	var query = req.params.query;
+	console.log(query);
+	// res.send(query);
+	var results;
+	youtube.search(query, 2, function(error, result) {
+		if (error) {
+		    console.log(error);
+		}
+		else {
+			// console.log(result.items);
+			results = result.items;
+			res.json(JSON.stringify(results));
+			// res.data = result;
+		 	// send(result);
+		}
+	});
+	// function waitForResults() {
+	// 	if (results) {
+	// 		res.setHeader('Content-Type', 'application/json');
+ //    		// res.send(JSON.stringify({ a: 1 }));
+ //    		console.log(results);
+	// 		res.send(JSON.stringify(results));
+	// 	} else {
+	// 		setTimeout(waitForResults, 1000);
+	// 	}
+	// }
+	// waitForResults();
+	// // res.send('test');
 });
 
 var sockets = {};
@@ -96,31 +129,30 @@ var users = [];
 var rooms = [];
 
 
-io.on('connection', function(socket) { 
-	// io send roomname list
-	// console.log("new user");
-	var user;
+// io.on('connection', function(socket) { 
+// 	// io send roomname list
+// 	// console.log("new user");
+// 	var user;
 
-	io.emit('rooms_list', rooms);
-	socket.on('create_room', function(roomname) {
-		// if (roomname in rooms) {
-		// 	socket.broadcast.to(socket.id).emit('room_error');
-		// } else {
-			var newRoom = new Room();
-			// console.log(roomname);
-			newRoom.init(roomname);
-			// socket.broadcast.to(socket.id).emit('room_approve');
-			io.emit('room_approve', roomname);
-		// }
-	});
-});
+// 	io.emit('rooms_list', rooms);
+// 	socket.on('create_room', function(roomname) {
+// 		// if (roomname in rooms) {
+// 		// 	socket.broadcast.to(socket.id).emit('room_error');
+// 		// } else {
+// 			var newRoom = new Room();
+// 			newRoom.init(roomname);
+// 			// socket.broadcast.to(socket.id).emit('room_approve');
+// 			io.emit('room_approve', roomname);
+// 		// }
+// 	});
+// });
 
 
-function Room() {}
-Room.prototype.init = function(roomname, password) {
-	this.name = roomname;
-	this.password = password;
-}
+// function Room() {}
+// Room.prototype.init = function(roomname, password) {
+// 	this.name = roomname;
+// 	this.password = password;
+// }
 
 
 function Room() {}
@@ -165,6 +197,7 @@ Room.prototype.init = function(roomname) {
 		// 	console.log("inc voice: " + stream);
 		// 	io.emit('sound', stream);
 		// });
+
 		// socket.on('mic-on', function() {
 		// 	io.emit('user-status-on', user);
 		// });

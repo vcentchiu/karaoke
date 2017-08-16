@@ -105,7 +105,7 @@ $(function() {
 			console.log('ready');
 
 			// allow MIC Controls
-			// micToggle();
+			micToggle();
 		})
 	}
 
