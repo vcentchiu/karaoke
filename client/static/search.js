@@ -14,7 +14,7 @@ $(function() {
                 var template = $("#search-template").html();
                 Mustache.parse(template);
                 var rendered = Mustache.render(template, results);
-                $("#search-container").html(rendered);
+                $("#search").html(rendered);
             }, 
             error: function(jqXHR, textStatus, err) {
                 alert('text status '+ textStatus + ', err ' + err);
