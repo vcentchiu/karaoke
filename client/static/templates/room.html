@@ -40,45 +40,32 @@
     <div id="room">
         <div id="left-nav"> 
             <div id="top-nav" class="border-bottom"> 
-                <div class="top-nav-item"> 
+                <div id="nav-search" class="top-nav-item"> 
                     Search
                     <div class="nav-light"> </div>
                 </div>
-                <div class="top-nav-item"> 
+                <div id="nav-queue" class="top-nav-item"> 
                     Queue
                     <div class="nav-light"> </div>
                 </div>
-                <div class="top-nav-item"> 
+                <div id="nav-mics" class="top-nav-item"> 
                     Mics
                     <div class="nav-light"> </div> 
                 </div>
                 <div id="minimize-left"> <- </div>
             </div>
             <div class="spacer"> </div>
-            
-            <div id="playlists" class="left-container" style="display: none">
+            <div class="left-containers">
+                <div id="playlists" class="left-container" style="display: none">
+                </div>
+                <div id="mics" style="display: none" class="left-container">
+                    <div style="text-align: center"> connected mics </div>
+                </div>
+                <div id="search"> </div>
             </div>
-            <div id="users-container" style="display: none" class="left-container">
-                <div style="text-align: center"> connected mics </div>
-            </div>
-            <div id="search-container"> </div>
-            <!-- mustache template -->
-            <script type="mustache/x-tmpl" id="search-template">
-                    {{ #results }}
-                        <div class="result-row" id="{{ id }}">
-                            <div class="thumbnail"> 
-                                <img class="result-img" src="{{ img }}"> </img>
-                            </div>
-                            <div class="result-details">
-                                <div class="result-title"> {{ title }} </div>
-                            </div>  
-                        </div>
-                    {{ /results }}
-                    <div class="result-spacer"> </div>
-            </script>
         </div>
         <div id="main" class="border-left shadow"> 
-            <div id="player"> </div>
+            <video id="player"> </video>
         </div>
     </div> 
 </body>
@@ -89,7 +76,20 @@
 <script src="../static/room.js"> </script>
 <script src="../static/search.js"> </script>
 
-
+<!-- mustache template -->
+<script type="mustache/x-tmpl" id="search-template">
+    {{ #results }}
+    <div class="result-row" id="{{ id }}">
+        <div class="thumbnail"> 
+            <img class="result-img" src="{{ img }}"> </img>
+        </div>
+        <div class="result-details">
+            <div class="result-title"> {{ title }} </div>
+        </div>  
+    </div>
+    {{ /results }}
+    <div class="result-spacer"> </div>
+</script>
 
 
 
