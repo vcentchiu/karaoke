@@ -58,13 +58,12 @@
             
             <div id="playlists" class="left-container" style="display: none">
             </div>
-            <div id="users-container" class="left-container">
+            <div id="users-container" style="display: none" class="left-container">
                 <div style="text-align: center"> connected mics </div>
             </div>
+            <div id="search-container"> </div>
             <!-- mustache template -->
             <script type="mustache/x-tmpl" id="search-template">
-            // {id: , img: , title: }
-                <div id="search-container">
                     {{ #results }}
                         <div class="result-row" id="{{ id }}">
                             <div class="thumbnail"> 
@@ -75,11 +74,11 @@
                             </div>  
                         </div>
                     {{ /results }}
-                </div>
+                    <div class="result-spacer"> </div>
             </script>
         </div>
         <div id="main" class="border-left shadow"> 
-
+            <div id="player"> </div>
         </div>
     </div> 
 </body>

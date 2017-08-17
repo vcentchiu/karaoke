@@ -7,12 +7,14 @@ var sslOptions = {
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 };
+// app.use(express.logger());
 var m = require('mustache');
 
 var YouTube = require('youtube-node');
 var youtube = new YouTube();
 youtube.setKey('AIzaSyCTEZJqKL0JcDcn1jDhTYvxQhQGDdxvrII');
 // var youtube = require('./api/youtube');
+// var google = require('googleapis');
 
 // var mongo = require('mongodb').MongoClient;
 // var assert = require('assert');
@@ -84,45 +86,39 @@ app.get('/create-room/:id-:name', function(req, res) {
 	// res.sendFile(path.join(__dirname, '/client/static/templates/room.html'));
 	var newRoom = new Room();
 	newRoom.init(roomName);
-	res.redirect('/room/' + roomName);
+	rooms[roomName] = newRoom;
+	res.send(roomName);
+	// res.redirect('/room/' + roomName);
 });
 
-
-app.get('/search/:query', function(req, res) {
-	// console.log("here");
-	// console.log(req.query.q);
-	// res.send(req.query);
+app.get('/search/:query', function(req, res, next) {
 	var query = req.params.query;
+	// var result = [];
 	console.log(query);
-	// res.send(query);
-	var results;
-	youtube.search(query, 2, function(error, result) {
+	var ready = false;
+	youtube.search(query, 9, function(error, result) {
 		if (error) {
-		    console.log(error);
+			console.log(error);
 		}
 		else {
-			// console.log(result.items);
-			results = result.items;
-			res.json(JSON.stringify(results));
-			// res.data = result;
-		 	// send(result);
+			var list = [];
+			var items = result.items;
+			for (var i = 0; i < items.length; i++) { 
+				var item = items[i];
+				result = {};
+				var snippet = item.snippet;
+				result.id = item.id.videoId;
+				result.title = snippet.title;
+				result.img = snippet.thumbnails.default.url;
+				list.push(result);
+			}
+			res.send(list);
 		}
 	});
-	// function waitForResults() {
-	// 	if (results) {
-	// 		res.setHeader('Content-Type', 'application/json');
- //    		// res.send(JSON.stringify({ a: 1 }));
- //    		console.log(results);
-	// 		res.send(JSON.stringify(results));
-	// 	} else {
-	// 		setTimeout(waitForResults, 1000);
-	// 	}
-	// }
-	// waitForResults();
-	// // res.send('test');
 });
 
-var sockets = {};
+
+var rooms = {};
 var users = [];
 
 
@@ -162,6 +158,7 @@ Room.prototype.init = function(roomname) {
 	console.log("attr roomname: " +  this.roomname);
 	console.log("roomname: " + roomname);
 	var roomio = io.of('/' + this.roomname);
+	// this.socket = roomio;
 
 	roomio.on('connection', function(socket) {
 		console.log("connection to room: " + roomname);
@@ -191,7 +188,37 @@ Room.prototype.init = function(roomname) {
 		socket.on('send_roomId', function(data) {
 			// send to specific mic
 			roomio.emit('verify_room', data);
-		})
+		});
+
+		socket.on('search', function(query) {
+			youtube.search(query, 2, function(error, result) {
+				if (error) {
+				    console.log(error);
+				}
+				else {
+				    // console.log(JSON.stringify(result, null, 2));
+				    // console.log(result);
+				 	// return result;
+				 	// return result;
+				 	// callback(result);
+				 	var list = [];
+					var items = result.items;
+					for (var i = 0; i < items.length; i++) { 
+						var item = items[i];
+						result = {};
+						var snippet = item.snippet;
+						result.id = item.id.videoId;
+						result.title = snippet.title;
+						result.img = snippet.thumbnails.default.url;
+						list.push(result);
+					}
+					// results = list;
+					console.log(list);
+					roomio.emit('search_results', list);
+					// ready = true;
+				}
+			});
+		});
 
 		// socket.on('streaming', function(stream) {
 		// 	console.log("inc voice: " + stream);

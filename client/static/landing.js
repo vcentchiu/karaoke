@@ -14,7 +14,7 @@ $(function() {
 			url: "/create-room/" + socket.id + '-' + roomname,
 			success: function(result) {
 				console.log("success");
-				// window.location = "/room/" + result;
+				window.location = "/room/" + result;
 			}
 		});
 

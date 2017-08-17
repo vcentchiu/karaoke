@@ -1,5 +1,5 @@
-var users = {};
 
+var users = {};
 var mics = {};
 
 $(function() {
@@ -24,6 +24,14 @@ $(function() {
 		})
 	})
 
+	// $("#search-form").submit(function( event ) {
+	// 	event.preventDefault();
+ //        socket.emit('search', $("#query").val());
+ //    });
+
+    socket.on('search_results', function(data) {
+        console.log(data);
+    });
 
 	// socket.on('joined_room', function() {
 	// 	socket.on('userser_join', function(user) {
